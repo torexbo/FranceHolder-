@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with FranceHolder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #2b2d42, #8d99ae);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            margin: 0;
+        }
+        .chat-box {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #f7fafc;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: slideIn 1s ease-out;
+        }
+        .chat-input {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            font-size: 16px;
+            color: #2d3748;
+            background-color: #edf2f7;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-input:focus {
+            outline: none;
+            border-color: #5a67d8;
+            box-shadow: 0 0 10px rgba(90, 103, 216, 0.5);
+        }
+        .send-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            background-color: #5a67d8;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .send-btn:hover {
+            background-color: #4c51bf;
+            transform: translateY(-4px);
+        }
+        .response {
+            margin-top: 25px;
+            font-size: 16px;
+            color: #2d3748;
+            background-color: #edf2f7;
+            padding: 14px;
+            border-radius: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        .response.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Animation for heading */
+        @keyframes slideIn {
+            0% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-box">
+        <h1>Chat with FranceHolder 💬</h1>
+        <input id="userInput" type="text" placeholder="Type your message..." class="chat-input">
+        <button onclick="askFranceHolder()" class="send-btn">Send ✨</button>
+        <div id="response" class="response">🤖 Awaiting your message...</div>
+    </div>
+
+    <script>
+        async function askFranceHolder() {
+            const userInput = document.getElementById("userInput").value;
+            const responseBox = document.getElementById("response");
+            responseBox.innerHTML = "💭 Thinking...";
+            responseBox.classList.remove("active");
+
+            // Clear previous input field
+            document.getElementById("userInput").value = "";
+
+            try {
+                const response = await fetch('/respond', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: userInput })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    responseBox.innerHTML = `🗣️ Reply: ${data.reply}`;
+                    responseBox.classList.add("active");
+                } else {
+                    responseBox.innerHTML = `❗ Error: ${data.error.message}`;
+                }
+
+            } catch (error) {
+                responseBox.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
